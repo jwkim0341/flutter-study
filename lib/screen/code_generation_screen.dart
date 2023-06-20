@@ -10,7 +10,8 @@ class CodeGenerationSreen extends ConsumerWidget {
   Widget build(BuildContext context,WidgetRef ref) {
     final state1 = ref.watch(gSateProvider);
     final state2 = ref.watch(gStatFutureProvider);
-    final state3 = ref.watch(gStatFuture2Provider);
+    final state3 = ref.watch(gStatFuture2Provider); 
+    final state4 = ref.watch(gStateMultiplyProvider(number1: 10,number2: 20,),);
 
     return DefaultLayout(
       title: 'CodeGenerationSreen',
@@ -46,6 +47,7 @@ class CodeGenerationSreen extends ConsumerWidget {
               child: CircularProgressIndicator(),
             ),
           ),
+          Text('State4 : $state4'),
         ],
       ),
     );
