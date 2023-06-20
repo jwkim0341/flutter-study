@@ -15,4 +15,20 @@ String gSate(GSateRef ref){
   return 'Hello Code Generation';
 }
 
+@riverpod
+Future<int> gStatFuture(GStatFutureRef ref) async{
+  await Future.delayed(Duration(seconds: 3));
+  return 10;
+}
+
+@Riverpod(
+  // 값 살려두기 속성
+  keepAlive: true,
+)
+Future<int> gStatFuture2(GStatFuture2Ref ref) async{
+  await Future.delayed(Duration(seconds: 3));
+  return 10;
+}
+
+
 // 2) Parameter > Family 파라미터를 일반 함수처럼 사용할 수 있도록

@@ -9,13 +9,43 @@ class CodeGenerationSreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context,WidgetRef ref) {
     final state1 = ref.watch(gSateProvider);
-
+    final state2 = ref.watch(gStatFutureProvider);
+    final state3 = ref.watch(gStatFuture2Provider);
 
     return DefaultLayout(
       title: 'CodeGenerationSreen',
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text('State1 : $state1'),
+          state2.when(
+            data: (data) {
+              return Text(
+                'State2 : $data',
+                textAlign: TextAlign.center,
+              );
+            },
+            error: (err, stack) => Text(
+              err.toString(),
+            ),
+            loading: () => Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
+          state3.when(
+            data: (data) {
+              return Text(
+                'State3 : $data',
+                textAlign: TextAlign.center,
+              );
+            },
+            error: (err, stack) => Text(
+              err.toString(),
+            ),
+            loading: () => Center(
+              child: CircularProgressIndicator(),
+            ),
+          ),
         ],
       ),
     );
