@@ -2,12 +2,18 @@ import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:section1/common/const/data.dart';
+import 'package:section1/common/secure_storage/secure_storage.dart';
 
-final dioProvider = Provider((ref){
-    final dio = Dio();
-    dio.interceptors.add(
-      CustomInterceptor(storage: storage),
-    );
+final dioProvider = Provider<Dio>((ref){
+  final dio = Dio();
+
+  final storage = ref.watch(secureStorageProvider);
+
+  //프로바이더 안에서 생성한 securestorage 사용
+  dio.interceptors.add(
+    CustomInterceptor(storage: storage),
+  );
+  return dio;
 });
 
 class CustomInterceptor extends Interceptor {
