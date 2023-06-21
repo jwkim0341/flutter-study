@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:section1/common/model/cursor_pagination_model.dart';
 import 'package:section1/restaurant/model/restaurant_model.dart';
 import 'package:section1/restaurant/repository/restaurant_repository.dart';
 
@@ -10,12 +11,12 @@ final restaurantProvider = StateNotifierProvider<RestaurantStateNotifier,
       },
     );
 
-class RestaurantStateNotifier extends StateNotifier<List<RestaurantModel>> {
+class RestaurantStateNotifier extends StateNotifier<CursorPagination<RestaurantModel>> {
   final RestaurantRepository repository;
 
   RestaurantStateNotifier({
     required this.repository,
-  }) : super([]) {
+  }) : super() { // 아직 실행하지, 로딩되지 않는 상태이다
     paginate();
   }
 
