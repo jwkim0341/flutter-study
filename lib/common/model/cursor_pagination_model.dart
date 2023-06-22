@@ -54,7 +54,7 @@ class CursorPaginationMeta{
 // cursorpaginationbase도 상속중
 // instance is CursorPagination -> true
 // instance is CursorPaginationBase -> true
-class CursorPaginationRefetching extends CursorPagination{
+class CursorPaginationRefetching<T> extends CursorPagination<T>{
   CursorPaginationRefetching({
     required super.meta,
     required super.data
@@ -64,7 +64,7 @@ class CursorPaginationRefetching extends CursorPagination{
 // 레이지 로딩 상태
 // 리스트의 맨 아래도 내려서
 // 추가 데이터를 요청하는 중
-class CursorPaginationFetchingMore extends CursorPagination{
+class CursorPaginationFetchingMore<T> extends CursorPagination<T>{
   CursorPaginationFetchingMore({
     required super.meta,
     required super.data
