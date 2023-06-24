@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:section1/common/const/colors.dart';
+import 'package:collection/collection.dart';
 
 class RatingCard extends StatelessWidget {
   // NetworkImage
@@ -36,11 +37,19 @@ class RatingCard extends StatelessWidget {
           email: email,
           rating: rating,
         ),
-        const SizedBox(height: 8.0,),
-        _Body(
-          content:content,
+        const SizedBox(
+          height: 8.0,
         ),
-        _Images(),
+        _Body(
+          content: content,
+        ),
+        if(images.length > 0)
+        SizedBox(
+          height: 100,
+          child: _Images(
+            images: images,
+          ),
+        ),
       ],
     );
   }
@@ -65,7 +74,9 @@ class _Header extends StatelessWidget {
           backgroundImage: avatarImage,
           radius: 12.0,
         ),
-        const SizedBox(width: 8.0,),
+        const SizedBox(
+          width: 8.0,
+        ),
         // 나머지 공강 차지
         Expanded(
           child: Text(
@@ -82,7 +93,7 @@ class _Header extends StatelessWidget {
         ...List.generate(
           5,
           (index) => Icon(
-            index < rating ? Icons.star: Icons.star_border_outlined,
+            index < rating ? Icons.star : Icons.star_border_outlined,
             color: PRIMARY_COLOR,
           ),
         ),
@@ -94,9 +105,7 @@ class _Header extends StatelessWidget {
 class _Body extends StatelessWidget {
   final String content;
 
-  const _Body({
-    required this.content,
-    super.key});
+  const _Body({required this.content, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -117,10 +126,26 @@ class _Body extends StatelessWidget {
 }
 
 class _Images extends StatelessWidget {
-  const _Images({super.key});
+  final List<Image> images;
+
+  const _Images({required this.images, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return ListView(
+      scrollDirection: Axis.horizontal,
+      children: images
+          .mapIndexed(
+            (index, e) => Padding(
+              padding:
+                  EdgeInsets.only(right: index == images.length - 1 ? 0 : 16.0),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: e,
+              ),
+            ),
+          )
+          .toList(),
+    );
   }
 }
