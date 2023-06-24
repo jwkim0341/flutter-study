@@ -9,6 +9,7 @@ import 'package:section1/restaurant/model/restaurant_detail_model.dart';
 import 'package:section1/restaurant/model/restaurant_model.dart';
 import 'package:section1/restaurant/provider/restaurant_provider.dart';
 import 'package:section1/restaurant/repository/restaurant_repository.dart';
+import 'package:skeletons/skeletons.dart';
 
 import '../../common/const/data.dart';
 
@@ -18,10 +19,12 @@ class RestaurantDetailScreen extends ConsumerStatefulWidget {
   const RestaurantDetailScreen({required this.id, super.key});
 
   @override
-  ConsumerState<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
+  ConsumerState<RestaurantDetailScreen> createState() =>
+      _RestaurantDetailScreenState();
 }
 
-class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen> {
+class _RestaurantDetailScreenState
+    extends ConsumerState<RestaurantDetailScreen> {
   @override
   void initState() {
     // TODO: implement initState
@@ -29,25 +32,55 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
     // detail page 올 때 마다 새로 상세정보 요청
     ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
   }
+
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(restaurantDetailProvider(widget.id));
 
     if (state == null) {
-      return DefaultLayout(child: Center(child: CircularProgressIndicator(),),);
+      return DefaultLayout(
+        child: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
     }
 
     return DefaultLayout(
-        title: '불타는 떡볶이',
-        child: CustomScrollView(
-          slivers: [
-            renderTop(model: state),
-            if(state is RestaurantDetailModel)
-              renderLabel(),
-            if(state is RestaurantDetailModel)
-              renderProduct(products: state.products),
-          ],
+      title: '불타는 떡볶이',
+      child: CustomScrollView(
+        slivers: [
+          renderTop(model: state),
+          if(state is! RestaurantDetailModel) renderLoading(),
+          if (state is RestaurantDetailModel) renderLabel(),
+          if (state is RestaurantDetailModel)
+            renderProduct(products: state.products),
+        ],
+      ),
+    );
+  }
+
+  SliverPadding renderLoading() {
+    return SliverPadding(
+      padding: EdgeInsets.symmetric(
+        vertical: 16.0,
+        horizontal: 16.0,
+      ),
+      sliver: SliverList(
+        delegate: SliverChildListDelegate(
+          List.generate(
+            3,
+            (index) => Padding(
+              padding: const EdgeInsets.only(bottom: 32.0),
+              child: SkeletonParagraph(
+                style: SkeletonParagraphStyle(
+                  lines: 5,
+                  padding: EdgeInsets.zero,
+                ),
+              ),
+            ),
+          ),
         ),
+      ),
     );
   }
 
@@ -73,7 +106,7 @@ class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen>
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       sliver: SliverList(
         delegate: SliverChildBuilderDelegate(
-              (context, index) {
+          (context, index) {
             final model = products[index];
 
             return Padding(
