@@ -12,14 +12,26 @@ import 'package:section1/restaurant/repository/restaurant_repository.dart';
 
 import '../../common/const/data.dart';
 
-class RestaurantDetailScreen extends ConsumerWidget {
+class RestaurantDetailScreen extends ConsumerStatefulWidget {
   final String id;
 
   const RestaurantDetailScreen({required this.id, super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(restaurantDetailProvider(id));
+  ConsumerState<RestaurantDetailScreen> createState() => _RestaurantDetailScreenState();
+}
+
+class _RestaurantDetailScreenState extends ConsumerState<RestaurantDetailScreen> {
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    // detail page 올 때 마다 새로 상세정보 요청
+    ref.read(restaurantProvider.notifier).getDetail(id: widget.id);
+  }
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(restaurantDetailProvider(widget.id));
 
     if (state == null) {
       return DefaultLayout(child: Center(child: CircularProgressIndicator(),),);
@@ -30,8 +42,10 @@ class RestaurantDetailScreen extends ConsumerWidget {
         child: CustomScrollView(
           slivers: [
             renderTop(model: state),
-            // renderLabel(),
-            // renderProduct(products: state!.pro),
+            if(state is RestaurantDetailModel)
+              renderLabel(),
+            if(state is RestaurantDetailModel)
+              renderProduct(products: state.products),
           ],
         ),
     );
