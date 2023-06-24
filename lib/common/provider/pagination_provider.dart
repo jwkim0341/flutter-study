@@ -12,7 +12,9 @@ U extends IBasePaginationRepository<T>
 
   PaginationProvider({
     required this.repository
-  }): super(CursorPaginationLoading());
+  }): super(CursorPaginationLoading()){
+    paginate();
+  }
 
   Future<void> paginate({
     int fetchCount = 20,
@@ -112,7 +114,9 @@ U extends IBasePaginationRepository<T>
         // 맨 처음 페이지의 응답값
         state = resp;
       }
-    } catch (e) {
+    } catch (e,stack) {
+      print(e);
+      print(stack);
       state = CursorPaginationError(message: '데이터를 가져오지 못했습니다.');
     }
   }
