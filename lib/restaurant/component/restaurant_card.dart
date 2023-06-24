@@ -28,29 +28,39 @@ class RestaurantCard extends StatelessWidget {
   //상세페이지 여부
   final bool isDetail;
 
+  // Hero 위젯 태그
+  final String? heroKey;
+
   //상세내용
   final String? detail;
 
-  const RestaurantCard(
-      {required this.image,
-      required this.name,
-      required this.tags,
-      required this.ratingsCount,
-      required this.deliveryTime,
-      required this.deliveryFee,
-      required this.ratings,
-      this.isDetail = false,
-      this.detail,
-      super.key});
+  const RestaurantCard({required this.image,
+    required this.name,
+    required this.tags,
+    required this.ratingsCount,
+    required this.deliveryTime,
+    required this.deliveryFee,
+    required this.ratings,
+    this.isDetail = false,
+    this.heroKey,
+    this.detail,
+    super.key});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        if (isDetail) image,
-        if (!isDetail)
+        if(heroKey != null)
+        Hero(
+          tag:ObjectKey(heroKey), //ObjectKey로 감싸줘야 함
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(isDetail ? 0 : 12.0),
+            child: image,
+          ),
+        ),
+        if(heroKey == null)
           ClipRRect(
-            borderRadius: BorderRadius.circular(12.0),
+            borderRadius: BorderRadius.circular(isDetail ? 0 : 12.0),
             child: image,
           ),
         SizedBox(
@@ -134,6 +144,7 @@ class RestaurantCard extends StatelessWidget {
         model.thumbUrl,
         fit: BoxFit.cover,
       ),
+      heroKey: model.id,
       name: model.name,
       tags: model.tags,
       ratingsCount: model.ratingsCount,
@@ -141,7 +152,7 @@ class RestaurantCard extends StatelessWidget {
       deliveryFee: model.deliveryFee,
       ratings: model.ratings,
       isDetail: isDetail,
-      detail: model is RestaurantDetailModel ? model.detail: null,
+      detail: model is RestaurantDetailModel ? model.detail : null,
     );
   }
 }
