@@ -1,22 +1,25 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:section1/common/model/cursor_pagination_model.dart';
+import 'package:section1/common/model/pagination_params.dart';
 import 'package:section1/restaurant/model/restaurant_model.dart';
 import 'package:section1/restaurant/repository/restaurant_repository.dart';
 
-final restaurantProvider = StateNotifierProvider<RestaurantStateNotifier,
-    CursorPaginationBase>((ref) {
-        final repository = ref.watch(restaurantRepositoryProvider);
-        final notifier = RestaurantStateNotifier(repository: repository);
-        return notifier;
-      },
-    );
+final restaurantProvider =
+    StateNotifierProvider<RestaurantStateNotifier, CursorPaginationBase>(
+  (ref) {
+    final repository = ref.watch(restaurantRepositoryProvider);
+    final notifier = RestaurantStateNotifier(repository: repository);
+    return notifier;
+  },
+);
 
 class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
   final RestaurantRepository repository;
 
   RestaurantStateNotifier({
     required this.repository,
-  }) : super(CursorPaginationLoading()) { // 아직 값이 들어오지 않을 때는 로딩을 시켜준다
+  }) : super(CursorPaginationLoading()) {
+    // 아직 값이 들어오지 않을 때는 로딩을 시켜준다
     paginate();
   }
 
@@ -29,7 +32,7 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
     // 강제로 다시 로딩하기
     // true - CursorPaginationLoading()
     bool forceRefetch = false,
-}) async {
+  }) async {
     // 5가지 가능성
     // State의 상태
     // [상태가]
@@ -41,10 +44,10 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
 
     /**바로 반환하는 상황 */
     // 1) hasMore = false (기존 상태에서 이미 다음 데이터가 없다는 값을 들고 있다면)
-    if(state is CursorPagination && !forceRefetch){
+    if (state is CursorPagination && !forceRefetch) {
       final pState = state as CursorPagination; // 무조건이라서 캐스팅 -> 속성 불러올 수 있음
 
-      if(!pState.meta.hasMore){
+      if (!pState.meta.hasMore) {
         return;
       }
     }
@@ -55,8 +58,47 @@ class RestaurantStateNotifier extends StateNotifier<CursorPaginationBase> {
     final isRefetching = state is CursorPaginationRefetching;
     final isFetchingMore = state is CursorPaginationFetchingMore;
 
-    if(fetchMore && (isLoading || isRefetching || isFetchingMore)){
+    if (fetchMore && (isLoading || isRefetching || isFetchingMore)) {
       return;
+    }
+
+    // PaginationParams 생성
+    PaginationParams paginationParams = PaginationParams(
+      count: fetchCount,
+    );
+
+    // fetchMore
+    // 데잍터를 추가로 더 가져오는 상황
+    if (fetchMore) {
+      final pState = state as CursorPagination;
+
+      //fetch more를 할 것
+      state = CursorPaginationFetchingMore(
+        meta: pState.meta,
+        data: pState.data,
+      );
+
+      paginationParams = paginationParams.copyWith(
+        after: pState.data.last.id,
+      );
+    }
+
+    final resp = await repository.paginate(
+      paginationParams: paginationParams,
+    );
+
+    if (state is CursorPaginationFetchingMore) {
+      final pState = state as CursorPaginationFetchingMore;
+
+      // 로딩이 끝난 상태
+      // 기존 데이터에
+      // 새로운 데이터 추가
+      state = resp.copyWith(
+        data: [
+          ...pState.data,
+          ...resp.data,
+        ],
+      );
     }
   }
 }
