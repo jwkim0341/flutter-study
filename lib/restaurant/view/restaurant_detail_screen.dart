@@ -59,7 +59,7 @@ class _RestaurantDetailScreenState
             padding: EdgeInsets.symmetric(horizontal: 16.0),
             sliver: SliverToBoxAdapter(
               child: RatingCard(
-                avatarImage: AssetImage('asset/img/logo.codefactory_logo.png'),
+                avatarImage: AssetImage('asset/img/logo/codefactory_logo.png'),
                 images: [],
                 rating: 4,
                 email: 'jc@codefactory.ai',
