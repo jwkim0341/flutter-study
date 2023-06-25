@@ -35,7 +35,7 @@ class ProductModel implements IModelWithId {
     required this.price,
     required this.restaurant,
   });
-  
+
   factory ProductModel.fromJson(Map<String,dynamic>json)
   => _$ProductModelFromJson(json);
 }

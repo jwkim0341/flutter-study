@@ -112,7 +112,6 @@ class _PaginationListViewState<T extends IModelWithId> extends ConsumerState<Pag
             );
           }
           final pItem = cp.data[index];
-
           return widget.itemBuilder(
             context,
             index,
