@@ -12,7 +12,7 @@ part 'product_repository.g.dart';
 
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
   final dio = ref.watch(dioProvider);
-  return ProductRepository(dio, baseUrl: ' http://$ip/product');
+  return ProductRepository(dio, baseUrl: 'http://$ip/product'); // 공백 없어야함!
 });
 
 // http://$ip/product

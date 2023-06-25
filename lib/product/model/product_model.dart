@@ -25,7 +25,7 @@ class ProductModel implements IModelWithId {
   final int price;
 
   // 레스토랑 정보
-  final RestaurantModel restarant;
+  final RestaurantModel restaurant;
 
   ProductModel({
     required this.id,
@@ -33,7 +33,7 @@ class ProductModel implements IModelWithId {
     required this.detail,
     required this.imgUrl,
     required this.price,
-    required this.restarant,
+    required this.restaurant,
   });
   
   factory ProductModel.fromJson(Map<String,dynamic>json)
