@@ -9,64 +9,11 @@ import 'package:section1/user/view/login_screen.dart';
 
 import '../const/data.dart';
 
-class SplashScreen extends ConsumerStatefulWidget {
+class SplashScreen extends ConsumerWidget {
   static String get routeName => 'splash';
-  const SplashScreen({super.key});
 
   @override
-  ConsumerState<SplashScreen> createState() => _SplashScreenState();
-}
-
-class _SplashScreenState extends ConsumerState<SplashScreen> {
-  @override
-  void initState() {
-    super.initState();
-
-    // deleteToken();
-    checkToken();
-  }
-
-  //토큰 모두 삭제
-  void deleteToken() async{
-    final storage = ref.read(secureStorageProvider);
-      await storage.deleteAll();
-  }
-
-  void checkToken() async {
-    final storage = ref.read(secureStorageProvider);
-
-    final refreshToken = await storage.read(key: REFRESH_TOKEN_KEY);
-    final accessToken = await storage.read(key: ACCESS_TOKEN_KEY);
-
-    final dio = Dio();
-
-    try{
-      final resp = await dio.post('http://$ip/auth/token',
-        options: Options(
-          headers: {
-            'authorization':'Bearer $refreshToken',
-          },
-        ),
-      );
-
-      await storage.write(key: ACCESS_TOKEN_KEY, value: resp.data['accessToken']);
-
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (_) => RootTab()),
-            (route) => false,
-      );
-    }catch(e){ //오류(refresh 토큰 만료 및 상태 200 아닐때)가 있다면 login screen으로 이동
-      Navigator.of(context).pushAndRemoveUntil(
-        MaterialPageRoute(
-            builder: (_) => LoginScreen()),
-            (route) => false,
-      );
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context,WidgetRef ref) {
     return DefaultLayout(
         backgroundColor: PRIMARY_COLOR,
         child: SizedBox(

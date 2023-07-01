@@ -12,6 +12,8 @@ import 'package:section1/common/layout/default_layout.dart';
 import 'package:section1/common/component/custom_text_form_field.dart';
 import 'package:section1/common/secure_storage/secure_storage.dart';
 import 'package:section1/common/view/root_tab.dart';
+import 'package:section1/user/model/user_model.dart';
+import 'package:section1/user/provider/user_me_provider.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
   static String get routeName => 'login';
@@ -26,7 +28,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
   String password = '';
   @override
   Widget build(BuildContext context) {
-    final dio = Dio();
+   final state = ref.watch(userMeProvider);
 
     return DefaultLayout(
       child: SingleChildScrollView(
@@ -63,35 +65,37 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
                 ),
                 const SizedBox(height: 16.0,),
                 ElevatedButton(
-                    onPressed: () async {
-                      // ID:PASSWORD
-                      final rawString = '$username:$password';
+                    onPressed: state is UserModelLoading ? null : () async {
+                      // 자동으로 user의 상태 변경
+                      ref.read(userMeProvider.notifier).login(username: username, password: password);
 
-                      //string 값을 넣고 string 값을 반환받겠다
-                      //어떻게 인코딩 할건지 정의
-                      Codec<String,String> stringToBase64 = utf8.fuse(base64);
-                      String token = stringToBase64.encode(rawString);
-
-                      final resp = await dio.post('http://$ip/auth/login',
-                      options: Options(
-                          headers: {
-                            'authorization':'Basic $token',
-                          },
-                        ),
-                      );
-
-                      final refreshToken = resp.data['refreshToken'];
-                      final accessToken = resp.data['accessToken'];
-
-                      final storage = ref.read(secureStorageProvider);
-
-                      await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
-                      await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
-
-                      //에러가 나지 않았다면 페이지 전환
-                       Navigator.of(context).push(
-                         MaterialPageRoute(builder: (_) => RootTab(),),
-                       );
+                      // // ID:PASSWORD
+                      // final rawString = '$username:$password';
+                      // //string 값을 넣고 string 값을 반환받겠다
+                      // //어떻게 인코딩 할건지 정의
+                      // Codec<String,String> stringToBase64 = utf8.fuse(base64);
+                      // String token = stringToBase64.encode(rawString);
+                      //
+                      // final resp = await dio.post('http://$ip/auth/login',
+                      // options: Options(
+                      //     headers: {
+                      //       'authorization':'Basic $token',
+                      //     },
+                      //   ),
+                      // );
+                      //
+                      // final refreshToken = resp.data['refreshToken'];
+                      // final accessToken = resp.data['accessToken'];
+                      //
+                      // final storage = ref.read(secureStorageProvider);
+                      //
+                      // await storage.write(key: REFRESH_TOKEN_KEY, value: refreshToken);
+                      // await storage.write(key: ACCESS_TOKEN_KEY, value: accessToken);
+                      //
+                      // //에러가 나지 않았다면 페이지 전환
+                      //  Navigator.of(context).push(
+                      //    MaterialPageRoute(builder: (_) => RootTab(),),
+                      //  );
                     },
                     style: ElevatedButton.styleFrom(
                       primary: PRIMARY_COLOR,
