@@ -14,6 +14,7 @@ import 'package:section1/common/secure_storage/secure_storage.dart';
 import 'package:section1/common/view/root_tab.dart';
 
 class LoginScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'login';
   const LoginScreen({super.key});
 
   @override
