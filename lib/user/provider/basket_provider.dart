@@ -8,7 +8,7 @@ class BasketProvider extends StateNotifier<List<BasketItemModel>> {
 
   Future<void> addToBasket({
     required ProductModel product,
-  }) {
+  }) async {
     // 1) 아직 장바구니에 해당되는 상품이 없다면
     // 장바구니에 상품을 추가한다.
     // 2) 만약에 이미 들어있다면
@@ -34,7 +34,7 @@ class BasketProvider extends StateNotifier<List<BasketItemModel>> {
     }
   }
 
-  Future<void> removeFromBsket({
+  Future<void> removeFromBasket({
     required ProductModel product,
     // true면 count와 관계없이 아예 삭제한다.
     bool isDelete = false,
