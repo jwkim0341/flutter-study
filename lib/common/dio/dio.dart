@@ -3,23 +3,29 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:section1/common/const/data.dart';
 import 'package:section1/common/secure_storage/secure_storage.dart';
+import 'package:section1/user/provider/auth_provider.dart';
+import 'package:section1/user/provider/user_me_provider.dart';
 
-final dioProvider = Provider<Dio>((ref){
+final dioProvider = Provider<Dio>((ref) {
   final dio = Dio();
 
   final storage = ref.watch(secureStorageProvider);
 
   //프로바이더 안에서 생성한 securestorage 사용
   dio.interceptors.add(
-    CustomInterceptor(storage: storage),
+    CustomInterceptor(storage: storage,ref:ref),
   );
   return dio;
 });
 
 class CustomInterceptor extends Interceptor {
   final FlutterSecureStorage storage;
+  final Ref ref;
 
-  CustomInterceptor({required this.storage});
+  CustomInterceptor({
+    required this.ref,
+    required this.storage,
+  });
 
   // 1. 요청을 보낼 때
   // 요청이 보내질때마다
@@ -59,9 +65,11 @@ class CustomInterceptor extends Interceptor {
   // 2. 응답을 받을 때
   @override
   void onResponse(Response response, ResponseInterceptorHandler handler) {
-    print('[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
+    print(
+        '[RES] [${response.requestOptions.method}] ${response.requestOptions.uri}');
     super.onResponse(response, handler);
   }
+
   // 3. 에러가 났을 때
   @override
   void onError(DioError err, ErrorInterceptorHandler handler) async {
@@ -93,7 +101,6 @@ class CustomInterceptor extends Interceptor {
     // 토큰을 새로 refresh 하려던 의도가 아니였느데 근데 401 에러가 났다면?
     if (isStatus401 && !isPathRefresh) {
       final dio = Dio();
-
 
       try {
         // 새로운 access token 발급
@@ -128,10 +135,17 @@ class CustomInterceptor extends Interceptor {
         // 실제로는 응답이 잘 왔다고 되돌려줘야함
         // 새로 보낸 응답의 요청을 보내준다
         return handler.resolve(response);
-
-      } on DioError catch (e) { // dio erro만 따로 잡아줄 수 있음
+      } on DioError catch (e) {
+        // dio erro만 따로 잡아줄 수 있음
         // 어떤 이유에서든 에러가 났을 때 token refresh 할 수 있는 상황이 아님
         // refresh toekn의 상태가 잘못됐다고 판단하면 그냥 에러 던져줌
+
+        // circular dependency error
+        // A, B
+        // A -> B의 친구
+        // B -> A의 친구
+        // A -> B -> A -> B -> A
+        ref.read(authProvider.notifier).logout();
         return handler.reject(e);
       }
     }
