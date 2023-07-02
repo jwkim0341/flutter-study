@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:section1/common/component/pagination_list_view.dart';
 import 'package:section1/restaurant/component/restaurant_card.dart';
 import 'package:section1/restaurant/provider/restaurant_provider.dart';
@@ -12,12 +13,11 @@ class RestaurantScreen extends StatelessWidget {
       itemBuilder: <ResturantModel>(_, index, model) {
         return GestureDetector(
           onTap: () {
-            Navigator.of(context).push(
-              MaterialPageRoute(
-                builder: (_) => RestaurantDetailScreen(
-                  id: model.id,
-                ),
-              ),
+            context.goNamed(
+              RestaurantDetailScreen.routeName,
+              pathParameters: {
+                'rid': model.id,
+              },
             );
           },
           child: RestaurantCard.fromModel(
